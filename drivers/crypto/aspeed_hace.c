@@ -100,9 +100,18 @@ static int digest_object(const void *src, unsigned int length, void *digest,
 	writel(HACE_SHA_BE_EN | method, base + ASPEED_HACE_HASH_CMD);
 
 	/* SHA512 hashing appears to have a througput of about 12MB/s */
-	return aspeed_hace_wait_completion(base + ASPEED_HACE_STS,
-			HACE_HASH_ISR,
-			1000 + (length >> 3));
+	aspeed_hace_wait_completion(base + ASPEED_HACE_STS, HACE_HASH_ISR,
+				    1000 + (length >> 3));
+
+	if (readl(base + ASPEED_HACE_STS)) {
+		debug("\nHACE error 0x%08x, resetting\n", readl(base + 0x1c));
+
+		writel(0x10, 0x1e6e2040);
+		mdelay(5);
+		writel(0x10, 0x1e6e2044);
+	}
+
+	return 0;
 }
 
 void hw_sha1(const unsigned char *pbuf, unsigned int buf_len,
