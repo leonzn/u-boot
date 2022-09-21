@@ -44,13 +44,6 @@ config ASPEED_BYPASS_SELFTEST
 	  Say Y here to bypass DRAM self test to speed up the boot time
 endif
 
-config ASPEED_ECC
-	bool "aspeed SDRAM error correcting code"
-	depends on DM && OF_CONTROL && ARCH_ASPEED
-	default n
-	help
-	  enable SDRAM ECC function
-
 choice
 	prompt "DDR4 PHY side ODT"
 	default ASPEED_DDR4_PHY_ODT80
